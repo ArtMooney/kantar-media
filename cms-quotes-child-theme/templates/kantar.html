@@ -9,52 +9,56 @@
 require_css(get_asset_url("../css/modern.css")) }} {% endblock stylesheet %} {%
 block body %} {% require_css %}
 <style>
-  {% if module_data|attr('logo')|attr('hidden') %}
-    .hs-quotes .header { display: none; }
-  {% endif %}
+  .quotes-wrapper {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 50px 30px 0;
+  }
 
-  {% if module_data|attr('quote_name')|attr('hidden') &&
-    module_data|attr('buyer_company')|attr('hidden') &&
-    module_data|attr('buyer_contacts')|attr('hidden') &&
-    module_data|attr('reference')|attr('hidden') &&
-    module_data|attr('quote_created')|attr('hidden') &&
-    module_data|attr('quote_expires')|attr('hidden') &&
-    module_data|attr('sender_user')|attr('hidden')
-  %}
-    .hs-quotes .banner--top { display: none; }
-  {% endif %}
+  .kantar-logo {
+    width: auto;
+    padding-bottom: 20px;
+  }
 
-  {% if module_data|attr('line_items_table')|attr('hidden') %}
-    .hs-quotes .line-items { display: none; }
-  {% endif %}
+  .address-wrapper {
+    margin-bottom: 30px;
+  }
 
-  {% if module_data|attr('terms')|attr('hidden') %}
-    .hs-quotes .terms { display: none; }
-  {% endif %}
+  .bold-title-wrapper,
+  .title-wrapper {
+    margin-bottom: 30px;
+  }
 
-  {% if !QUOTE.hs_esign_enabled && !QUOTE.hs_show_signature_box %}
-    .hs-quotes .esign { display: none; }
-  {% endif %}
+  .title-wrapper.top-margin {
+    margin-top: 64px;
+  }
 
-  {% if module_data|attr('payment-schedule')|attr('hidden') || !ASSOCIATED_OBJECTS.payment_schedule %}
-    .hs-quotes .payment-schedule { display: none; }
-  {% endif %}
+  .info-container {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    grid-template-rows: auto;
+    grid-template-columns: 140px 1fr;
+    grid-auto-columns: auto;
+    margin-bottom: 10px;
+    display: grid;
+  }
 
-  {% if !QUOTE.hs_payment_enabled %}
-    .hs-quotes .payment { display: none; }
-  {% endif %}
+  .signoff-container {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-columns: auto;
+    margin-top: 140px;
+    padding-bottom: 200px;
+    display: grid;
+  }
 
-  {% if module_data|attr('sender_contact')|attr('hidden') &&
-    module_data|attr('sender_company')|attr('hidden')
-  %}
-    .hs-quotes .contacts { display: none; }
-  {% endif %}
-
-  {% if module_data|attr('download')|attr('hidden') &&
-    module_data|attr('print')|attr('hidden')
-  %}
-    .hs-quotes .options { display: none; }
-  {% endif %}
+  #w-node-d46bd130-7e22-e3e4-6bef-123612129fcd-b864f648,
+  #w-node-ddaa3d9e-27e5-4059-90b0-557326c305c2-b864f648 {
+    grid-area: span 1 / span 1 / span 1 / span 1;
+  }
 </style>
 {% end_require_css %}
 
@@ -62,23 +66,173 @@ block body %} {% require_css %}
   <div class="kantar-logo">
     {% module "logo" path="../modules/quote_logo" %}
   </div>
+
   <div class="address-wrapper">
+    {% module "sender_company" label="Sender company" path="@hubspot/rich_text"
+    html="
     <div>
-      OK Förlaget AB<br />Att: Marjo Köhler<br />Box 23800<br />104 35 STOCKHOLM
+      {{ personalization_token('template_data.quote.hs_sender_company_name', '')
+      }}
     </div>
-  </div>
-  <div class="bold-title-wrapper">
     <div>
-      <strong
-        >Samarbetsavtal mellan KANTAR Media Sweden AB, 559383-6835 (Kantar) och
-        OK Förlaget AB, 556040-1472 (OK Förlaget).
-      </strong>
+      {{ personalization_token('template_data.quote.hs_sender_company_address',
+      '') }}
     </div>
+    <div>
+      {{ personalization_token('template_data.quote.hs_sender_company_address2',
+      '') }}
+    </div>
+    <div>
+      {{ personalization_token('template_data.quote.hs_sender_company_city', '')
+      }}, {{
+      personalization_token('template_data.quote.hs_sender_company_state', '')
+      }} {{ personalization_token('template_data.quote.hs_sender_company_zip',
+      '') }}
+    </div>
+    <div>
+      {{ personalization_token('template_data.quote.hs_sender_company_country',
+      '') }}
+    </div>
+    " %}
   </div>
+
   <div class="title-wrapper">
+    {% module "Title_heading" label="Title heading" path="@hubspot/rich_text"
+    html="
+    <strong
+      >Samarbetsavtal mellan KANTAR Media Sweden AB, 559383-6835 (Kantar) och OK
+      Förlaget AB, 556040-1472 (OK Förlaget). </strong
+    ><br /><br />
     <div>
       Härmed avtalas om nyttjanderätten av ORVESTO® Konsument och mätning av
       tidningen Vi Bilägare för OK Förlagets räkning.
+    </div>
+    " %}
+  </div>
+
+  <div class="info-container">
+    <div><strong>Titel:</strong></div>
+
+    {% module "Title_data" label="Title" path="@hubspot/rich_text" html="
+    <div>Vi Bilägare</div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Databaser:</strong></div>
+
+    {% module "Databases_data" label="Databases" path="@hubspot/rich_text"
+    html=" {% for line_item in line_items %} {{ line_item.name }} {% endfor %} "
+    %}
+  </div>
+  <div class="info-container">
+    <div><strong>Nyttjanderätt:</strong></div>
+
+    {% module "Right_of_use_data" label="Right of use" path="@hubspot/rich_text"
+    html="
+    <div>
+      OK Förlaget har rätt att använda undersökningsresultaten i tidningens
+      marknadsföring, försäljning och redaktionella arbete. Tidningen kommer att
+      vara tillgänglig i analysprogrammet SESAME® och därmed valbar för
+      medieanalyser. Undersökningsresultaten får inte säljas vidare.
+    </div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Ändring av uppgift:</strong></div>
+
+    {% module "Change_of_task_data" label="Change of task"
+    path="@hubspot/rich_text" html="
+    <div>
+      För att kunna säkerställa att vi använder oss av korrekta uppgifter
+      behöver vi veta så snart en ändring skett gällande utgivningsfrekvens,
+      annonspriser eller logotyp och få sådan information tillsänt oss.
+    </div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Källangivelse:</strong></div>
+
+    {% module "Source_statement_data" label="Source statement"
+    path="@hubspot/rich_text" html="
+    <div>
+      När siffror från ORVESTO används ska källan anges som ex. Källa: ORVESTO
+      Konsument 2023:1
+    </div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Prisspecifikation:</strong></div>
+
+    {% module "Price_specification_data" label="Price specification"
+    path="@hubspot/rich_text" html="
+    <div>
+      Mätning och redovisning i undersökningen ORVESTO Konsument, en titel à 67
+      000 SEK exkl. moms.
+    </div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Pris exkl. moms:</strong></div>
+
+    {% module "Price_exkl_VAT_data" label="Price exkl VAT"
+    path="@hubspot/rich_text" html="
+    <div>67 000 SEK.</div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Fakturering:</strong></div>
+
+    {% module "Billing_data" label="Billing" path="@hubspot/rich_text" html="
+    <div>Fakturering av hela beloppet sker i juni 2023.</div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Faktureringsadress:</strong></div>
+
+    {% module "Billing_address_data" label="Billing address"
+    path="@hubspot/rich_text" html="
+    <div>Obs! alltid mailadress okforlaget@pdf.scancloud.se</div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Betalningsvillkor:</strong></div>
+
+    {% module "Payment_terms_data" label="Payment terms"
+    path="@hubspot/rich_text" html="
+    <div>30 dagar netto.</div>
+    " %}
+  </div>
+  <div class="info-container">
+    <div><strong>Avtalsperiod:</strong></div>
+
+    {% module "Contract_period_data" label="Contract period"
+    path="@hubspot/rich_text" html="
+    <div>1 mars 2023 – 28 februari 2024</div>
+    " %}
+  </div>
+  <div class="title-wrapper top-margin">
+    {% module "Subtitle_data" label="Subtitle" path="@hubspot/rich_text" html="
+    <div>Stockholm</div>
+    " %}
+  </div>
+  <div class="signoff-container">
+    <div id="w-node-d46bd130-7e22-e3e4-6bef-123612129fcd-b864f648">
+      {% module "Signature_first" label="Signature first"
+      path="@hubspot/rich_text" html="
+      <div>
+        <strong>Kantar Media Sweden AB<br /> </strong>
+      </div>
+      <div>Emma Spiik</div>
+      " %}
+    </div>
+    <div id="w-node-ddaa3d9e-27e5-4059-90b0-557326c305c2-b864f648">
+      {% module "Signature_second" label="Signature second"
+      path="@hubspot/rich_text" html="
+      <div>
+        <strong>OK Förlaget AB<br /> </strong>
+      </div>
+      <div>Marjo Köhler</div>
+      " %}
     </div>
   </div>
 </div>
