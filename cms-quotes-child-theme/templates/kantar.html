@@ -27,7 +27,7 @@ block body %} {% require_css %}
 
   .bold-title-wrapper,
   .title-wrapper {
-    margin-bottom: 30px;
+    margin-bottom: 10px;
   }
 
   .title-wrapper.top-margin {
@@ -53,11 +53,6 @@ block body %} {% require_css %}
     margin-top: 140px;
     padding-bottom: 200px;
     display: grid;
-  }
-
-  #w-node-d46bd130-7e22-e3e4-6bef-123612129fcd-b864f648,
-  #w-node-ddaa3d9e-27e5-4059-90b0-557326c305c2-b864f648 {
-    grid-area: span 1 / span 1 / span 1 / span 1;
   }
 </style>
 {% end_require_css %}
@@ -100,40 +95,52 @@ block body %} {% require_css %}
     {% module "Title_heading" label="Title heading" path="@hubspot/rich_text"
     html="
     <strong
-      >Samarbetsavtal mellan KANTAR Media Sweden AB, 559383-6835 (Kantar) och OK
-      Förlaget AB, 556040-1472 (OK Förlaget). </strong
-    ><br /><br />
+      >Samarbetsavtal mellan {{
+      personalization_token('template_data.quote.hs_sender_company_name', '')
+      }}, 559383-6835 ({{
+      personalization_token('template_data.quote.hs_sender_company_name', '')
+      }}) och {{
+      personalization_token('template_data.quote.associated_objects.company.name',
+      '') }}, {{
+      personalization_token('template_data.quote.associated_objects.company.organisationsnummer',
+      '') }} ({{
+      personalization_token('template_data.quote.associated_objects.company.name',
+      '') }}). </strong
+    ><br />" %} {% module "comments" label="Comments" path="@hubspot/rich_text"
+    html={{ "
     <div>
-      Härmed avtalas om nyttjanderätten av ORVESTO® Konsument och mätning av
-      tidningen Vi Bilägare för OK Förlagets räkning.
+      " ~ template_translations.comments_from.message ~ " " ~
+      ptoken_sender_full_name ~ "
     </div>
-    " %}
+    " ~ ptoken_comments }} %}
   </div>
 
   <div class="info-container">
     <div><strong>Titel:</strong></div>
-
     {% module "Title_data" label="Title" path="@hubspot/rich_text" html="
-    <div>Vi Bilägare</div>
+    <div>
+      {{
+      personalization_token('template_data.quote.associated_objects.deal.titel','')
+      }}
+    </div>
     " %}
   </div>
   <div class="info-container">
     <div><strong>Databaser:</strong></div>
 
-    {% module "Databases_data" label="Databases" path="@hubspot/rich_text"
-    html=" {% for line_item in line_items %} {{ line_item.name }} {% endfor %} "
-    %}
+    <div>
+      {% for line_item in ASSOCIATED_OBJECTS.line_items %} {{ line_item.name +
+      "<br />" }} {% endfor %}
+    </div>
   </div>
   <div class="info-container">
     <div><strong>Nyttjanderätt:</strong></div>
-
     {% module "Right_of_use_data" label="Right of use" path="@hubspot/rich_text"
     html="
     <div>
-      OK Förlaget har rätt att använda undersökningsresultaten i tidningens
-      marknadsföring, försäljning och redaktionella arbete. Tidningen kommer att
-      vara tillgänglig i analysprogrammet SESAME® och därmed valbar för
-      medieanalyser. Undersökningsresultaten får inte säljas vidare.
+      {{
+      personalization_token('template_data.quote.associated_objects.deal.nyttjanderatt','')
+      }}
     </div>
     " %}
   </div>
@@ -166,8 +173,9 @@ block body %} {% require_css %}
     {% module "Price_specification_data" label="Price specification"
     path="@hubspot/rich_text" html="
     <div>
-      Mätning och redovisning i undersökningen ORVESTO Konsument, en titel à 67
-      000 SEK exkl. moms.
+      {{
+      personalization_token('template_data.quote.associated_objects.deal.prisspecifikation',
+      '') }}
     </div>
     " %}
   </div>
@@ -176,14 +184,22 @@ block body %} {% require_css %}
 
     {% module "Price_exkl_VAT_data" label="Price exkl VAT"
     path="@hubspot/rich_text" html="
-    <div>67 000 SEK.</div>
+    <div>
+      {{
+      personalization_token('template_data.quote.associated_objects.deal.pris_exkl__moms_',
+      '') }} {{ personalization_token('QUOTE.hs_currency', '') }}
+    </div>
     " %}
   </div>
   <div class="info-container">
     <div><strong>Fakturering:</strong></div>
 
     {% module "Billing_data" label="Billing" path="@hubspot/rich_text" html="
-    <div>Fakturering av hela beloppet sker i juni 2023.</div>
+    <div>
+      {{
+      personalization_token('template_data.quote.associated_objects.deal.fakturering',
+      '') }}
+    </div>
     " %}
   </div>
   <div class="info-container">
@@ -191,7 +207,11 @@ block body %} {% require_css %}
 
     {% module "Billing_address_data" label="Billing address"
     path="@hubspot/rich_text" html="
-    <div>Obs! alltid mailadress okforlaget@pdf.scancloud.se</div>
+    <div>
+      {{
+      personalization_token('template_data.quote.associated_objects.deal.kontakt_email',
+      '') }}
+    </div>
     " %}
   </div>
   <div class="info-container">
@@ -207,31 +227,63 @@ block body %} {% require_css %}
 
     {% module "Contract_period_data" label="Contract period"
     path="@hubspot/rich_text" html="
-    <div>1 mars 2023 – 28 februari 2024</div>
+    <div>
+      {{ template_data.quote.associated_objects.deal.avtalsstart |
+      format_datetime('long')}} - {{
+      template_data.quote.associated_objects.deal.avtalsstopp |
+      format_datetime('long') }}
+    </div>
+    <div>
+      {{personalization_token('template_data.quote.associated_objects.deal.avtalsstart','')}}
+      -
+      {{personalization_token('template_data.quote.associated_objects.deal.avtalsstopp','')}}
+    </div>
+    <div>
+      {{ template_data.quote.associated_objects.deal.avtalsstart }} - {{
+      template_data.quote.associated_objects.deal.avtalsstopp }}
+    </div>
     " %}
   </div>
+
   <div class="title-wrapper top-margin">
-    {% module "Subtitle_data" label="Subtitle" path="@hubspot/rich_text" html="
-    <div>Stockholm</div>
-    " %}
+    {% module "terms" label="Terms" path="@hubspot/rich_text", html={{ "
+    <h2>" ~ template_translations.purchase_terms.message ~ "</h2>
+    " ~ ptoken_terms }} %}
   </div>
+
   <div class="signoff-container">
-    <div id="w-node-d46bd130-7e22-e3e4-6bef-123612129fcd-b864f648">
+    <div>
       {% module "Signature_first" label="Signature first"
       path="@hubspot/rich_text" html="
       <div>
-        <strong>Kantar Media Sweden AB<br /> </strong>
+        <strong
+          >{{
+          personalization_token('template_data.quote.hs_sender_company_name',
+          '') }}<br />
+        </strong>
       </div>
-      <div>Emma Spiik</div>
+      <div>
+        {{
+        personalization_token('template_data.quote.associated_objects.deal.kontaktperson_kantar','')
+        }}
+      </div>
       " %}
     </div>
-    <div id="w-node-ddaa3d9e-27e5-4059-90b0-557326c305c2-b864f648">
+    <div>
       {% module "Signature_second" label="Signature second"
       path="@hubspot/rich_text" html="
       <div>
-        <strong>OK Förlaget AB<br /> </strong>
+        <strong
+          >{{
+          personalization_token('template_data.quote.associated_objects.company.name',
+          '') }}<br />
+        </strong>
       </div>
-      <div>Marjo Köhler</div>
+      <div>
+        {{
+        personalization_token('template_data.quote.associated_objects.deal.kontaktperson_kund','')
+        }}
+      </div>
       " %}
     </div>
   </div>
